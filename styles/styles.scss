@@ -1,0 +1,92 @@
+@mixin traffic-lights {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin: 0 auto;
+  opacity: .2;
+}
+
+@mixin controls {
+  margin-top: 15px;
+  width: 200px;
+  height: 50px;
+}
+
+body {
+  background-color: #f5f6fa;
+  padding: 0;
+  margin: 0;
+
+	section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+    align-items: center;
+  }
+  
+  .container {
+    border: 2px solid #ccc;
+    width: 200px;
+    height: 600px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    background-color: #696867;
+
+    .red-light {
+      @include traffic-lights;
+      background-color: #ff1500;
+    }
+
+    .yellow-light {
+      @include traffic-lights;
+      background-color: #fff700;
+    }
+
+    .green-countdown {
+      width: 100px;
+      height: 100px;
+      line-height: 100px;
+      text-align: center;
+      font-style: italic;
+      font-size: 60px;
+      margin: 0 auto;
+      border-radius: 20px;
+      color: #0dde45;
+    }
+
+    .green-light {
+      @include traffic-lights;
+      background-color: #02ff0f;
+    }
+
+    .active {
+      opacity: 1;
+    }
+  }
+
+  #interval-field {
+    display: block;
+    padding: 0;
+    border: 1px solid #ccc;
+    @include controls;
+
+    &::placeholder {
+      text-align: center;
+    }
+  }
+
+  span {
+    color: red;
+  }
+
+  button {
+    @include controls;
+
+    &:disabled {
+      box-shadow: 2px 2px 12px 2px #ccc;
+    }
+  }
+}

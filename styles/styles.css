@@ -1,7 +1,7 @@
 body {
   background-color: #f5f6fa;
-  margin: 0;
   padding: 0;
+  margin: 0;
 }
 body section {
   display: flex;
@@ -36,6 +36,17 @@ body .container .yellow-light {
   opacity: 0.2;
   background-color: #fff700;
 }
+body .container .green-countdown {
+  width: 100px;
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+  font-style: italic;
+  font-size: 60px;
+  margin: 0 auto;
+  border-radius: 20px;
+  color: #0dde45;
+}
 body .container .green-light {
   width: 100px;
   height: 100px;
@@ -47,9 +58,27 @@ body .container .green-light {
 body .container .active {
   opacity: 1;
 }
-body button {
-  margin-top: 10px;
+body #interval-field {
+  display: block;
+  padding: 0;
+  border: 1px solid #ccc;
+  margin-top: 15px;
   width: 200px;
+  height: 50px;
+}
+body #interval-field::placeholder {
+  text-align: center;
+}
+body span {
+  color: red;
+}
+body button {
+  margin-top: 15px;
+  width: 200px;
+  height: 50px;
+}
+body button:disabled {
+  box-shadow: 2px 2px 12px 2px #ccc;
 }
 
 /*# sourceMappingURL=styles.css.map */

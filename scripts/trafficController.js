@@ -1,87 +1,106 @@
-const standByButton = document.querySelector(".standby-mode");
-const operatingButton = document.querySelector(".operating-mode");
-const redLight = document.querySelector(".red-light");
-const yellowLight = document.querySelector(".yellow-light");
-const greenLight = document.querySelector(".green-light");
-let standByTimer, greenTimer;
+let baseInterval = intervalInput.value;
+let countdownFrequency = baseInterval >= 1000 ? 1000 : baseInterval;
 const timeouts = [];
-const controlFunctions = [
-  {
-    func: toggleLight,
-    light: redLight
-  },
-  {
-    func: toggleLight,
-    light: yellowLight
-  },
-  {
-    func: toggleLight,
-    light: yellowLight
-  },
-  {
-    func: toggleLight,
-    light: greenLight
-  },
-  {
-    func: flashGreen,
-    light: greenLight
-  },
-  {
-    func: toggleLight,
-    light: yellowLight
-  },
-  {
-    func: toggleLight,
-    light: yellowLight
-  }
+const controlPoints = [
+  { light: redLight, timing: 8 * baseInterval },
+  { light: yellowLight, timing: 4 * baseInterval },
+  { light: yellowLight, timing: 8 * baseInterval },
+  { light: greenLight, timing: 8 * baseInterval },
+  { light: greenLight, timing: 12 * baseInterval },
+  { light: greenLight, timing: 13 * baseInterval },
+  { light: greenLight, timing: 14 * baseInterval },
+  { light: greenLight, timing: 15 * baseInterval },
+  { light: greenLight, timing: 16 * baseInterval },
+  { light: greenLight, timing: 17 * baseInterval },
+  { light: greenLight, timing: 18 * baseInterval },
+  { light: yellowLight, timing: 19 * baseInterval },
+  { light: yellowLight, timing: 23 * baseInterval }
 ];
-const timings = [4000, 2000, 4000, 4000, 6000, 9500, 11500];
 
 function toggleLight(light) {
   light.classList.toggle("active");
 }
 
-function deactivateLights() {
-  document
-    .querySelectorAll(".container > div")
-    .forEach(light => light.classList.remove("active"));
-}
-
-function flashGreen() {
-  greenTimer = setInterval(toggleLight, 500, greenLight);
-  timeouts.push(greenTimer);
-  timeouts.push(setTimeout(() => {
-    clearInterval(greenTimer);
-  }, 3500));
-}
-
-function onOperatingMode() {
-  redLight.classList.add("active");
-  timeouts.push(setTimeout(onOperatingMode, 11500));
-  for (let i = 0; i < controlFunctions.length; i++) {
-    if (controlFunctions[i].func === flashGreen) {
-      timeouts.push(setTimeout(controlFunctions[i].func, 6000));
-    } else {
-      timeouts.push(setTimeout(controlFunctions[i].func, timings[i], controlFunctions[i].light))
-    }
-  }
-}
-
-operatingButton.addEventListener("click", event => {
-  clearInterval(standByTimer);
-  deactivateLights();
-  event.target.disabled = true;
-  standByButton.disabled = false;
-  onOperatingMode();
-});
-
-standByButton.addEventListener("click", event => {
+function clearAppState(event) {
   timeouts.forEach(timeout => {
     clearTimeout(timeout);
     clearInterval(timeout);
   });
-  deactivateLights();
-  event.target.disabled = true;
+  greenCountdownCell.textContent = "";
+  document
+    .querySelectorAll(".container > div")
+    .forEach(light => light.classList.remove("active"));
+  if (event) event.target.disabled = true;
+}
+
+function validateInterval(interval) {
+  if (interval < 1) return;
+  return !/\D/g.test(String(interval));
+}
+
+function greenLightCountdown() {
+  let secRemained = (4 * baseInterval) / 1000;
+  greenCountdownCell.textContent = Number.isInteger(secRemained)
+    ? secRemained
+    : secRemained.toFixed(1);
+  let timer = setInterval(() => {
+    secRemained -= countdownFrequency / 1000;
+    greenCountdownCell.textContent = Number.isInteger(secRemained)
+      ? secRemained
+      : secRemained.toFixed(1);
+  }, countdownFrequency);
+  timeouts.push(timer);
+  timeouts.push(
+    setTimeout(() => {
+      clearInterval(timer);
+      greenCountdownCell.textContent = "";
+    }, 4 * baseInterval)
+  );
+}
+
+function onOperatingMode() {
+  redLight.classList.add("active");
+  timeouts.push(setTimeout(onOperatingMode, 23 * baseInterval));
+  timeouts.push(setTimeout(greenLightCountdown, 8 * baseInterval));
+  for (let i = 0; i < controlPoints.length; i++) {
+    timeouts.push(
+      setTimeout(toggleLight, controlPoints[i].timing, controlPoints[i].light)
+    );
+  }
+}
+
+intervalInput.addEventListener("change", event => {
+  if (!validateInterval(+event.target.value)) {
+    wrongInterval.textContent = "Wrong value for interval";
+    return;
+  }
+  wrongInterval.textContent = "";
+  if (+event.target.value !== baseInterval) {
+    const ratio = +event.target.value / baseInterval;
+    controlPoints.forEach(control => (control.timing *= ratio));
+    clearAppState();
+    operatingButton.disabled = false;
+  }
+  baseInterval = +event.target.value;
+  countdownFrequency = baseInterval >= 1000 ? 1000 : baseInterval;
+});
+
+operatingButton.addEventListener("click", event => {
+  clearAppState(event);
+  standByButton.disabled = false;
+  stopTrafficLight.disabled = false;
+  timeouts.push(setTimeout(onOperatingMode, 0));
+});
+
+standByButton.addEventListener("click", event => {
+  clearAppState(event);
   operatingButton.disabled = false;
-  standByTimer = setInterval(toggleLight, 500, yellowLight);
+  stopTrafficLight.disabled = false;
+  timeouts.push(setInterval(toggleLight, baseInterval, yellowLight));
+});
+
+stopTrafficLight.addEventListener("click", event => {
+  clearAppState(event);
+  standByButton.disabled = false;
+  operatingButton.disabled = false;
 });

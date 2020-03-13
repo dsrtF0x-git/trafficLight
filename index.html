@@ -4,8 +4,9 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="styles/styles.css">
-	<script defer src="scripts/trafficController.js"></script>
+  <link rel="stylesheet" href="styles/styles.css">
+  <script defer src="scripts/vars.js"></script>
+	<script type="module" defer src="scripts/trafficController.js"></script>
 	<title>Traffic light</title>
 </head>
 
@@ -14,10 +15,17 @@
 		<div class="container">
 			<div class="red-light"></div>
 			<div class="yellow-light"></div>
-			<div class="green-light"></div>
-		</div>
+      <div class="green-light"></div>
+      <div class="green-countdown"></div>
+    </div>
+    <label for="interval-field">
+      Enter the base interval in ms
+      <input type="number" id="interval-field" value="500">
+      <span></span>
+    </label>
+    <button class="operating-mode">Launch traffic light</button>
 		<button class="standby-mode">Standby mode</button>
-		<button class="operating-mode">Operating mode</button>
+    <button class="stop-traffic">Stop traffic light</button>
 	</section>
 </body>
 
